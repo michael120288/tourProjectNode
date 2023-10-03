@@ -12,20 +12,24 @@ exports.checkBody = (req, res, next) => {
 
 exports.getAllTours = async (req, res) => {
   try {
-    // const queryObj = {...req.query}
-    // const excludedFields = ['page','sort','limit','fields']
-    // excludedFields.forEach(el = delete queryObj[el])
+    // BUILD QUERY
+    // 1) Filtering
+    const queryObj = { ...req.query };
+    const excludedFields = ['page', 'sort', 'limit', 'fields'];
+    excludedFields.forEach((el) => delete queryObj[el]);
 
-    //advanced filtering
-    // let queryStr = JSON.stringify(queryObj)
-    // queryStr=queryStr.replace(/\b(gte|gt|lte|lt)\b/g,match=>`$${match}`)
-    // console.log(JSON.parse(queryStr))
+    //2)advanced filtering
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    console.log(JSON.parse(queryStr));
     // console.log(req.query);
-    //  const query = Tour.find(JSON.parse(queryStr))
+    const query = Tour.find(JSON.parse(queryStr));
     // //execute query
-    const tours = await Tour.find();
+    //const query = await Tour.find(queryObj);
     // console.log(req.requestTime);
-     //const tours = await query
+
+    //Execute query
+    const tours = await query;
     res.status(200).json({
       status: 'success',
       requestedAt: req.requestTime,
@@ -87,7 +91,7 @@ exports.updateTour = async (req, res) => {
     res.status(200).json({
       status: 'success',
       data: {
-        tour
+        tour,
       },
     });
   } catch (err) {
@@ -97,18 +101,17 @@ exports.updateTour = async (req, res) => {
     });
   }
 };
-exports.deleteTour =async (req, res) => {
-    try{
-        await Tour.findByIdAndDelete(req.params.id)
-        res.status(204).json({
-            status: 'success',
-            data: null,
-          });
+exports.deleteTour = async (req, res) => {
+  try {
+    await Tour.findByIdAndDelete(req.params.id);
+    res.status(204).json({
+      status: 'success',
+      data: null,
+    });
   } catch (err) {
-        res.status(400).json({
-            status: 'fail',
-            message: err,
-          });
-    }
-  
+    res.status(400).json({
+      status: 'fail',
+      message: err,
+    });
+  }
 };
