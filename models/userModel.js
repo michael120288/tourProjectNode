@@ -9,14 +9,18 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Please tell us your name!'],
   },
   email: {
-    type: String,
-    required: [true, 'Please provide your email'],
-    unique: true,
-    lowercase: true,
-    validate: [validator.isEmail, 'Please provide a valid email'],
+      type: String,
+      required: [true, 'Please provide your email'],
+      unique: true,
+      lowercase: true,
+      validate: {
+          validator: validator.isEmail,
+          message: 'Please provide a valid email'
+      },
   },
+  
   photo: {type:String,
-    default: 'default.jpg' 
+    default: 'default.jpg'
   },
   role: {
     type: String,

@@ -25,7 +25,8 @@
     "morgan": "^1.10.0",
     "nodemon": "^3.0.1",
     "parcel-bundler": "^1.12.5",
-    "prettier": "^3.0.3"
+    "prettier": "^3.0.3",
+    "validator": "^13.11.0"
   },
   "dependencies": {
     "@babel/polyfill": "^7.12.1",
@@ -51,7 +52,6 @@
     "sharp": "^0.32.6",
     "slugify": "^1.6.6",
     "stripe": "^14.8.0",
-    "validator": "^13.11.0",
     "xss-clean": "^0.1.4"
   },
   "engines": {
