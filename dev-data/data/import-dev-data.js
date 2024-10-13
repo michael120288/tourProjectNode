@@ -1,11 +1,11 @@
 const fs = require('fs');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const { TIMEOUT } = require('dns');
+const { timeLog } = require('console');
 const Tour = require('../../models/tourModel');
 const User = require('../../models/userModel');
 const Review = require('../../models/reviewModel');
-const { TIMEOUT } = require('dns');
-const { timeLog } = require('console');
 
 dotenv.config({ path: './config.env' });
 

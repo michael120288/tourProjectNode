@@ -1,9 +1,9 @@
 const sharp = require('sharp');
-const User = require('../models/userModel');
 const multer = require('multer');
+const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
-const factory = require('./handlerFactory.js');
+const factory = require('./handlerFactory');
 
 // const multerStorage = multer.diskStorage({
 //   destination: (req, file, cb) => {
@@ -106,7 +106,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteMe = catchAsync(async (req, res, next) => {
-  await User.deleteOne({_id:req.user.id})
+  await User.deleteOne({ _id: req.user.id });
 
   res.status(204).json({
     status: 'success',
@@ -122,9 +122,9 @@ exports.getUser = factory.getOne(User);
 //   });
 // };
 exports.createUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yet defined!Please use /signup instead',
+  res.status(201).json({
+    status: 'success',
+    message: 'SignedUp successfully',
   });
 };
 // exports.updateUser = (req, res) => {
