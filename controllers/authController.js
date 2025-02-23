@@ -36,21 +36,72 @@ const createSendToken = (user, statusCode, res) => {
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
-  const newUser = await User.create({
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-    passwordConfirm: req.body.passwordConfirm,
-    role: req.body.role || 'user',
-  });
-  // const newUser = await User.create(req.body);
-  const url = `${req.protocol}://${req.get('host')}/me`;
-  //const url = `/me`;
-  console.log(url);
-  console.log(newUser);
-  //await new Email(newUser, url).sendWelcome();
-  console.log('For Fazil');
-  createSendToken(newUser, 201, res);
+  try {
+    // 1. Validate required fields
+    const requiredFields = ['name', 'email', 'password', 'passwordConfirm'];
+    const missingFields = requiredFields.filter((field) => !req.body[field]);
+
+    if (missingFields.length > 0) {
+      const fieldList = missingFields.join(', ');
+      return next(new AppError(`Missing required fields: ${fieldList}`, 400));
+    }
+
+    // 2. Create new user
+    const { name, email, password, passwordConfirm, role } = req.body;
+
+    if (password.length >= 30) {
+      return next(new AppError('Password longer then 30 characters', 400)); // Password (400)
+    }
+
+    const newUser = await User.create({
+      name,
+      email,
+      password,
+      passwordConfirm,
+      role: role || 'user',
+    });
+
+    // 3. Construct URL for welcome email
+    const url = `${req.protocol}://${req.get('host')}/me`;
+    console.log('\n🔹 Welcome URL:', url);
+    console.log('\n🔹 New User Created:', newUser);
+
+    // 4. Send welcome email (optional)
+    try {
+      await new Email(newUser, url).sendWelcome();
+      console.log('📧 Welcome email sent successfully!');
+    } catch (emailError) {
+      console.error('❌ Error sending welcome email:', emailError);
+      return next(
+        new AppError(
+          'User created, but email could not be sent. Please contact support.',
+          500,
+        ),
+      );
+    }
+
+    // 5. Send JWT token to client
+    createSendToken(newUser, 201, res);
+  } catch (error) {
+    // 6. Handle specific errors
+    if (error.name === 'ValidationError') {
+      return next(new AppError(error.message, 400)); // User input validation error (400)
+    }
+    if (error.code === 11000) {
+      return next(
+        new AppError(
+          'This email is already in use. Please use another email.',
+          400,
+        ),
+      ); // Duplicate email (400)
+    }
+
+    // 7. Handle unexpected errors
+    console.error('🔥 Unexpected Error:', error);
+    return next(
+      new AppError('Something went wrong. Please try again later.', 500),
+    ); // Internal server error (500)
+  }
 });
 
 exports.login = catchAsync(async (req, res, next) => {
