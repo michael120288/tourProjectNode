@@ -41,12 +41,70 @@ exports.updateOne = (Model) =>
 
 exports.createOne = (Model) =>
   catchAsync(async (req, res, next) => {
+    if (!req.body || Object.keys(req.body).length === 0) {
+      return next(new AppError('Request body cannot be empty', 400));
+    }
+    // 🚨 Check if name exists
+    if (!req.body.name || req.body.name.trim() === '') {
+      return next(new AppError('A tour must have a name', 400));
+    }
+    // 🚨 Check if name exists
+    if (!req.body.duration) {
+      return next(new AppError('A tour must have duration', 400));
+    }
+    if (!req.body.maxGroupSize) {
+      return next(new AppError('A tour must have a group size', 400));
+    }
+
+    // 🚨 Check if difficulty is valid
+    const validDifficulties = ['easy', 'medium', 'difficult'];
+    if (
+      !req.body.difficulty ||
+      !validDifficulties.includes(req.body.difficulty)
+    ) {
+      return next(
+        new AppError('Difficulty is either: easy, medium, difficult', 400),
+      );
+    }
+
+    if (
+      req.body.ratingsAverage > 5 ||
+      req.body.ratingsAverage < 1 ||
+      !req.body.ratingsAverage
+    ) {
+      return next(new AppError('Ratings average must be between 1 and 5', 400));
+    }
+    if (req.body.price < req.body.priceDiscount) {
+      return next(
+        new AppError('Discount price should be below regular price', 400),
+      );
+    }
+    if (!req.body.price) {
+      return next(new AppError('A tour must have a price', 400));
+    }
+    if (!req.body.summary) {
+      return next(new AppError('A tour must have a summary', 400));
+    }
+    // ✅ Check if imageCover exists (BEFORE difficulty)
+    if (!req.body.imageCover || req.body.imageCover.trim() === '') {
+      return next(new AppError('A tour must have a cover image', 400)); // 🔥 This runs first
+    }
+    // ✅ Validate startLocation coordinates
+    if (
+      !req.body.startLocation ||
+      !req.body.startLocation.coordinates ||
+      !Array.isArray(req.body.startLocation.coordinates) ||
+      req.body.startLocation.coordinates.length !== 2 ||
+      typeof req.body.startLocation.coordinates[0] !== 'number' ||
+      typeof req.body.startLocation.coordinates[1] !== 'number'
+    ) {
+      return next(new AppError('Invalid location format', 400));
+    }
     const doc = await Model.create(req.body);
+
     res.status(201).json({
       status: 'success',
-      data: {
-        data: doc,
-      },
+      data: doc,
     });
   });
 
@@ -62,9 +120,7 @@ exports.getOne = (Model, popOptions) =>
 
     res.status(200).json({
       status: 'success',
-      data: {
-        data: doc,
-      },
+      data: doc,
     });
   });
 

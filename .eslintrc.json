@@ -15,5 +15,20 @@
     "class-methods-use-this": "off",
     "prefer-destructuring": ["error", { "object": true, "array": false }],
     "no-unused-vars": ["error", { "argsIgnorePattern": "req|res|next|val|log" }]
-  }
+  },
+  // "env": {
+  //   "node": true,
+  //   "es2021": true
+  // },
+  // "parserOptions": {
+  //   "ecmaVersion": 2021
+  // },
+  // "overrides": [
+  //   {
+  //     "files": ["**/*.spec.js", "**/*.test.js"], // Adjust based on your test file pattern
+  //     "rules": {
+  //       "node/no-unpublished-require": "off"
+  //     }
+  //   }
+  // ]
 }

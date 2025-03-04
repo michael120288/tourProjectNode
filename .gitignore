@@ -1,3 +1,6 @@
 /node_modules
 
 /config.env
+
+/allure-results
+/reports
